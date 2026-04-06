@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet Map Integration</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            background-color: #050505;
+            color: #00ff41;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const CENTRAL_SOIL = 'https://raw.githubusercontent.com/gairxx/omega-gen-forest/main/soil/demand.json';
+        let map = L.map('map').setView([0, 0], 2);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const marker = L.circleMarker([lat, lng], {
+                    color: '#00ff41',
+                    radius: 10
+                }).addTo(map);
+                map.setView([lat, lng], 13);
+                // Load soil data using CENTRAL_SOIL
+                fetch(CENTRAL_SOIL)
+                    .then(response => response.json())
+                    .then(data => console.log(data));
+            }, () => {
+                alert('Geolocation service failed.');
+            });
+        } else {
+            alert('Geolocation is not supported by this browser.');
+        }
+
+        // Hardware concurrency and device memory sensing
+        console.log('Hardware Concurrency: ', navigator.hardwareConcurrency);
+        console.log('Device Memory: ', navigator.deviceMemory);
+    </script>
+</body>
+</html>
